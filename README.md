@@ -1,21 +1,128 @@
-<<<<<<< HEAD
-# React + Vite
+# 🌸 SheAscend  
+Empowering Women Through AI-Driven Career Guidance
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SheAscend is an **AI-powered career and confidence platform** designed to help girls and women pursue education, develop skills, and build meaningful careers.  
+In many communities, cultural expectations limit ambition — SheAscend breaks these barriers through **personalized roadmaps, daily learning tasks, and an AI voice mentor** that supports users anytime through webhook-driven automation.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+- **🎯 AI-Generated Career Roadmaps**  
+  Personalized learning paths tailored to each user's goals.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **🗓️ Daily & Weekly Task Engine**  
+  n8n workflows expand weekly tasks into structured **7-day daily plans**.
 
-## Expanding the ESLint configuration
+- **🎙️ AI Voice Mentor (Vapi Webhooks)**  
+  A supportive voice agent that conducts assessments, reminders, and motivational calls.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# SheAscend-
-An AI Career and Confidence Journey Companion.
->>>>>>> 7bb82ff50a314f80e3b573a0fb02390946963a63
+- **🧠 Skill Assessments**  
+  Voice-based question sessions to boost communication & confidence.
+
+- **✨ Future-Self Motivation**  
+  Encouraging, emotional guidance from the “future you.”
+
+- **🌸 Women-Centric UI**  
+  Soft, accessible, and uplifting user experience.
+
+---
+
+## 🛠️ Tech Stack
+
+### **Frontend**
+- React.js  
+- TailwindCSS  
+- Vite  
+
+### **Backend & Services**
+- Appwrite (Auth, Database, Functions)
+
+### **Automation**
+- n8n Workflows  
+  - Weekly → Daily task generator  
+  - Roadmap builder  
+  - Task writing pipelines  
+  - Vapi outbound call triggers  
+
+### **AI & Voice Agent**
+- Vapi.ai  
+  - No API keys needed  
+  - Entire communication handled via webhooks  
+
+### **Deployment**
+- Appwrite Cloud  
+
+---
+
+## 📁 Project Structure<br>
+<br>
+SheAscend/<br>
+├── .git/<br>
+├── dist/                    # Production build<br>
+├── node_modules/<br>
+├── public/                  # Static assets<br>
+├── src/                     # Frontend source<br>
+│   ├── components/<br>
+│   ├── context/<br>
+│   ├── pages/<br>
+│   ├── services/<br>
+│   └── assets/<br>
+├── .env<br>
+├── .gitignore<br>
+├── appwrite.config<br>
+├── eslint.config.js<br>
+├── index.html<br>
+├── package.json<br>
+├── postcss.config.js<br>
+├── tailwind.config.js<br>
+├── vite.config.js<br>
+└── She Ascend Workflows/    # n8n automation<br>
+
+## 👩‍💻 Team SheAscend
+
+**Team Name:** SheAscenders  
+
+**Members:**  
+- Saad Khan — AI Workflow Architect , AI Agent & Voice Agent 
+- Swati Singh —  Frontend Lead     
+- Ambuj Pandey —  Backend & Data Base lead   
+---
+
+## 🔧 How the System Works
+
+1. Users choose a career goal.  
+2. Appwrite stores user info and triggers n8n.  
+3. n8n generates a weekly roadmap → expands into 7 daily tasks.  
+4. Appwrite saves all tasks.  
+5. Vapi connects via inbound/outbound webhooks to deliver:  
+   - Voice coaching  
+   - Skill assessments  
+   - Motivational messages  
+6. Users follow tasks daily and track their progress.
+
+---
+
+## 🔐 Environment Variables
+
+Only Appwrite + Gemini keys are needed:
+
+VITE_APPWRITE_ENDPOINT=
+VITE_APPWRITE_PROJECT_ID=
+VITE_APPWRITE_DATABASE_ID=
+VITE_APPWRITE_COLLECTION_ID=
+VITE_APPWRITE_API_KEY=
+VITE_GEMINI_API_KEY=
+
+
+---
+
+## 📜 License  
+This project is licensed under the **MIT License**.
+
+---
+
+## 🤍 Vision  
+To empower every woman with the **clarity, confidence, and support** needed to rise beyond limitations and create the future she deserves.
+
+**SheAscend — Rise with Confidence.**
