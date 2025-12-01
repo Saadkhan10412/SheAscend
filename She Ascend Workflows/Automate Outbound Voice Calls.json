@@ -1,0 +1,175 @@
+{
+  "name": "Automate Outbound Voice Calls",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Set Vapi fields\nYou must set the following fields that you can obtain inside your Vapi account \n- phone number id which will make the call\n- assistant id which will be enabled in the call\n- your Vapi api key\n\n## Set country code\n- insert the phone number country code. Include the + symbol and no spaces.",
+        "height": 524,
+        "width": 260
+      },
+      "id": "cb6ee340-933a-4699-bc0a-be7605309df7",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.vapi.ai/call",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.vapiApi }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"assistantId\": \"{{ $json.vapiAssistantId }}\",\n  \"phoneNumberId\": \"{{ $json.vapiPhoneNumberId }}\",\n  \"customer\": {\n    \"number\": \"{{ $('Webhook').item.json.body.phone }}\"\n  }\n}\n",
+        "options": {}
+      },
+      "id": "b5557910-7469-4937-9229-1d599ad5bf2d",
+      "name": "Start outbound Vapi call",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        688,
+        608
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f38947e1-c75a-44cc-88f9-c44fc80bada8",
+              "name": "vapiPhoneNumberId",
+              "type": "string",
+              "value": "71830f29-1649-4be2-bdbf-79b625b416c0"
+            },
+            {
+              "id": "463ed66e-e072-48dc-a75d-a3815fd07de0",
+              "name": "vapiAssistantId",
+              "type": "string",
+              "value": "1060d7f5-62b2-4633-b036-5869c169aa4a"
+            },
+            {
+              "id": "93f058cd-e015-4b83-a16f-efceddafb128",
+              "name": "vapiApi",
+              "type": "string",
+              "value": "eee1c535-b2ee-4e1e-90fb-8d7822ad08e7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e4039ec8-1e6e-4d59-ab3c-14727562cdae",
+      "name": "Set fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        464,
+        608
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## Requirements \n### n8n form\n- A text field that takes a full international phone number including the + symbol and country code. Example for US: +11234567890.\n- Add more fields according to your use case\n\n### Vapi\n- A [Vapi](https://vapi.ai/?aff=onenode) account with credit\n- A connected phone number which will make the calls\n- An assistant created and ready to make calls\n- Vapi api key \n\n### Useful links\n- [Vapi docs](https://docs.vapi.ai/api-reference/calls/create)",
+        "height": 472,
+        "width": 320,
+        "color": 4
+      },
+      "id": "fe87d956-e2f6-4fbd-ac30-e09b3c48bb15",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        368
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "3075f3b5-12d0-465a-b1ff-0b13d928f684",
+      "name": "Wait 2min",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        240,
+        608
+      ],
+      "webhookId": "dd4440b8-37f2-4f20-84ad-46a9e107fb82",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8de4e8df-cbc7-4452-90d9-ad5723129eb4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        592
+      ],
+      "id": "222fb23d-47ee-4ddc-bafc-55821400c50e",
+      "name": "Webhook",
+      "webhookId": "8de4e8df-cbc7-4452-90d9-ad5723129eb4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wait 2min": {
+      "main": [
+        [
+          {
+            "node": "Set fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set fields": {
+      "main": [
+        [
+          {
+            "node": "Start outbound Vapi call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait 2min",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8db15f96-4099-4100-a127-d298349b32b9",
+  "meta": {
+    "templateId": "6577",
+    "instanceId": "93e58b459b6a1e4eb9f5a4b6ea358b5d3e145d0d66906555726107266b0b77b4"
+  },
+  "id": "OixkpCYVBOjpmBdS",
+  "tags": []
+}

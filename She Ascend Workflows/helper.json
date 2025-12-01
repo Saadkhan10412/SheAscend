@@ -1,0 +1,117 @@
+{
+  "name": "helper",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "7a45a1e8-328f-4544-b7d6-aa2615f4c278",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6fc10c73-a65a-45aa-aaa9-ff30e710e515",
+      "name": "Webhook",
+      "webhookId": "7a45a1e8-328f-4544-b7d6-aa2615f4c278"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You will receive two inputs:\n\ninstruction: {{ $('Webhook').item.json.body.instruction }}\ndata: {{ $('Webhook').item.json.body.data }}\ncontext: {{ $('Webhook').item.json.body.context }}\n\nYour job:\n- Read the instruction exactly as written.\n- Apply the instruction ONLY to the data value.\n- Do NOT explain what you are doing.\n- Do NOT add any extra text.\n- Do NOT modify the instruction.\n- If context is provided answer according to it.\n- If context is null then simply do the instruction.\n- Do NOT output JSON unless the instruction specifically asks for JSON.\n- ONLY output the final processed data result.\n\nSTRICT YOUTUBE LINK RULES (UPDATED — DO NOT BREAK):\n\n1. If the instruction requires a link, you MUST output EXACTLY ONE YouTube link.\n2. You are NOT allowed to invent, guess, or generate any video ID.\n3. Instead of video links, you MUST create a YouTube SEARCH link.\n4. The search query MUST come ONLY from the data and/or context.\n5. Format for the link MUST be EXACTLY:\n     https://www.youtube.com/results?search_query=QUERY\n6. QUERY must be URL-encoded (spaces → +).\n7. You MUST output exactly ONE link and nothing else.\n8. If the instruction does NOT require a link, output NO link.\n\nABSOLUTE HARD RULE:\nNever generate a YouTube video URL.\nNever invent video IDs.\nOnly output one YouTube SEARCH link when required.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2ec37f5d-d23d-4b87-aa11-966322114e14",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "90a42c69-b4f3-4296-806b-c392aa0f8b29",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "2adf4a57-bc0c-421a-8573-f99f0abd35c4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NKaoU2bcnjVM48l3",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b294bcea-f5eb-45e6-91ea-e637946f2dfd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "93e58b459b6a1e4eb9f5a4b6ea358b5d3e145d0d66906555726107266b0b77b4"
+  },
+  "id": "iAvfpDJlbGXg4Z1j",
+  "tags": []
+}

@@ -1,0 +1,318 @@
+{
+  "name": "sheAscend RoadMap Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=userId: {{ $json.UserId }}\nname: {{ $json.Name }}\ngoal: {{ $json.goal }}\ndurationweeks: {{ $json['Duration months'] }}\ndailyDuration(minutes): {{ $json['Daily Duration (minutes)'] }}\n\nCreate a high-level weekly roadmap outline for this user.\n\nReturn ONLY valid JSON in this exact structure:\n\n{\n  \"duration\": 2,\n  \"weeklyTasks\": [\n    { \"topic\": \"Week 1 topic here\" },\n    { \"topic\": \"Week 2 topic here\" }\n  ]\n}\n\nSTRICT RULES (DO NOT BREAK):\n\n1. The field \"durationweeks\" represents the **exact number of weeks**, NOT months.\n   - Do NOT multiply by 4.\n   - Do NOT divide.\n   - Do NOT convert.\n   - Treat \"durationweeks\" as the literal total number of weeks.\n\n2. The output \"duration\" MUST equal durationweeks exactly.\n\n3. weeklyTasks.length MUST equal durationweeks exactly.\n   - If durationweeks = 1 → weeklyTasks = 1 item\n   - If durationweeks = 3 → weeklyTasks = 3 items\n   - NEVER generate extra weeks.\n\n4. Only include a \"topic\" for each week.\n   - No daily tasks.\n   - No additional fields.\n\n5. Topics must progressively build toward the user's goal.\n\n6. NO markdown.\n7. NO extra text.\n8. NO comments.\n9. Output ONLY valid JSON following the structure above.\n",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        400,
+        352
+      ],
+      "id": "e9e3a9b0-e615-4fef-b977-5cd25ae2a77b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"duration\": 2,\n  \"userid\": \"userid\",\n  \"weeklyTasks\": [\n    {\n      \"topic\": \"Week 1 topic\",\n      \"weeknumber\": 1\n    },\n    {\n      \"topic\": \"Week 2 topic\",\n      \"weeknumber\": 2\n    }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        576
+      ],
+      "id": "754c0623-ea0a-4e05-96a5-334ba1ba0f0a",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        416,
+        576
+      ],
+      "id": "b07abd11-242d-4de4-8d30-460e73241a10",
+      "name": "Cohere Chat Model",
+      "credentials": {
+        "cohereApi": {
+          "id": "bXNFRjjGCTyWVBH0",
+          "name": "CohereApi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "00453f0e-0657-4eac-bc5f-5daad7cb37af",
+              "name": "Name",
+              "value": "={{ $json.body.name }}\n",
+              "type": "string"
+            },
+            {
+              "id": "eacd9222-1ee0-4b79-b78b-88c62ae8e118",
+              "name": "Duration months",
+              "value": "={{ $json.body.duration }}\n",
+              "type": "number"
+            },
+            {
+              "id": "f60ca983-f673-4e78-925f-dee1ed9bfad2",
+              "name": "Daily Duration (minutes)",
+              "value": "={{ $json.body.dailyDuration }}\n",
+              "type": "number"
+            },
+            {
+              "id": "659f2c23-b98b-4ac8-bcf4-20e55ed4e42b",
+              "name": "UserId",
+              "value": "={{ $json.body.userId }}\n",
+              "type": "string"
+            },
+            {
+              "id": "f265b658-731b-43bb-baea-d1017969d74f",
+              "name": "goal",
+              "value": "={{ $json.body.goal }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        352
+      ],
+      "id": "ad10cb59-027d-4377-af59-c3df11176f96",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You will receive:\n- userId: {{ $('Edit Fields').item.json.UserId }}\n- duration: {{ $('Edit Fields').item.json['Duration months'] }}\n- weeklyTasks: {{ JSON.stringify($('Basic LLM Chain').item.json.output.weeklyTasks) }}\n\nIMPORTANT RULES (DO NOT VIOLATE):\n\n1. You MUST use EXACTLY the weeklyTasks received as input. \n   - Do NOT create new topics.\n   - Do NOT change the topics.\n   - Do NOT replace the topics.\n   - Do NOT generate topics outside the given list.\n\n2. The number of weeks in the output MUST equal the number of items in weeklyTasks.\n\n3. For EACH weeklyTask, generate exactly 7 dailyTasks.\n\n4. Daily tasks MUST be based ONLY on the weeklyTask.topic.\n   - If the topic is \"Introduction to Fashion Design Principles\"\n     → ALL 7 days must be about fashion design.\n   - NOTHING related to AI, machine learning, data science, coding, or unrelated subjects.\n\n5. No daily task may repeat its content.\n\n6. Output MUST follow EXACTLY this JSON structure:\n\n{\n  \"data\": {\n    \"userId\": \"{{ $('Edit Fields').item.json.UserId }}\",\n    \"duration\": \"{{ $('Edit Fields').item.json['Duration months'] }}\",\n    \"weeklyTasks\": [\n      {\n        \"topic\": \"string\",\n        \"weeknumber\": \"string\",\n        \"dailyTasks\": [\n          {\n            \"date\": \"string\",\n            \"topic\": \"string\",\n            \"overview\": \"string\",\n            \"tasks\": [\n              {\n                \"taskName\": \"string\",\n                \"taskDescription\": \"string\",\n                \"index\": number,\n                \"resource\": \"string\"\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n\n7. DO NOT output anything outside the JSON.\n8. DO NOT alter topics.\n9. DO NOT invent topics.\n10. DO NOT hallucinate any unrelated subjects.\n11. Use the topic from weeklyTasks EXACTLY as provided.\n\n***EXTREMELY IMPORTANT SECTION (FOLLOW EXACTLY):***\n\n12. The field named “duration” does NOT represent months.  \n    - It represents the **total number of weeks** to generate.  \n    - Example: duration = \"3\" → generate exactly 3 weeklyTasks.\n\n13. Every task must include a REAL, VALID, CLICKABLE resource link.\n    - The link MUST start with \"http://\" or \"https://\"\n    - The link MUST be relevant to the weeklyTask.topic\n    - The link MUST NOT be generic (“read this book” or “check notes”)\n    - The link MUST NOT be fictional, broken, or placeholder text\n    - Use only credible sources: fashion blogs, YouTube tutorials, pattern-making sites, educational articles, designer resources, etc.\n\n14. DO NOT ever output placeholders like:\n    - \"example.com\"\n    - \"yourlinkhere\"\n    - \"resource.com\"\n    - \"#\"\n    - \"N/A\"\n\n15. All resources must be specific, working URLs that a real user can click and learn from.\n",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1008,
+        -64
+      ],
+      "id": "4b278369-e965-4ceb-8d82-1c275619151f",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"data\": {\n    \"userId\": \"string\",\n    \"duration\": \"string\",\n    \"weeklyTasks\": [\n      {\n        \"topic\": \"string\",\n        \"weeknumber\": 1,\n        \"dailyTasks\": [\n          {\n            \"date\": \"string\",\n            \"topic\": \"string\",\n            \"overview\": \"string\",\n            \"tasks\": [\n              {\n                \"taskName\": \"string\",\n                \"taskDescription\": \"string\",\n                \"index\": 1,\n                \"resource\": \"string\"\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1104,
+        160
+      ],
+      "id": "afc0f5ae-bcc7-4291-b587-c4482d62bf50",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "019d968f-51ba-452b-9a18-2ca95638ae22",
+        "responseMode": "lastNode",
+        "responseData": "noData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        352
+      ],
+      "id": "dc9e4c24-ce52-45bb-9800-0786c68f6cd4",
+      "name": "Webhook",
+      "webhookId": "019d968f-51ba-452b-9a18-2ca95638ae22"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        976,
+        160
+      ],
+      "id": "1c1aaf4c-a66a-4e81-881d-9994f110df8c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NKaoU2bcnjVM48l3",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        368
+      ],
+      "id": "f96eafc5-3cb6-47b6-99e7-d488cd5a5753",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NKaoU2bcnjVM48l3",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://69298f1e00066121425e.sgp.appwrite.run/roadmap-callback",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1680,
+        144
+      ],
+      "id": "f3e20e71-0e50-4cee-8ac7-2dc432fd2fd7",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "29c2bbc7-6075-4c8a-841e-612b1092a185",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "93e58b459b6a1e4eb9f5a4b6ea358b5d3e145d0d66906555726107266b0b77b4"
+  },
+  "id": "7ccHH80W9ftL5dDo",
+  "tags": []
+}
